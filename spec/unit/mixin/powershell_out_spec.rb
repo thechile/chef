@@ -21,16 +21,10 @@ require 'chef/mixin/powershell_out'
 describe Chef::Mixin::PowershellOut do
   let(:shell_out_class) { Class.new { include Chef::Mixin::PowershellOut } }
   subject(:object) { shell_out_class.new }
-  let(:node) { double('node') }
   let(:architecture) { "something"  }
   let(:flags) {
      "-NoLogo -NonInteractive -NoProfile -ExecutionPolicy RemoteSigned -InputFormat None"
   }
-
-  before do
-    allow(node).to receive(:[]).with(:kernel).and_return({ machine: architecture })
-    allow(object).to receive(:node).and_return(node)
-  end
 
   describe "#powershell_out" do
     it "runs a command and returns the shell_out object" do

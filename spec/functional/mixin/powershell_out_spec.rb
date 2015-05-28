@@ -21,10 +21,6 @@ require 'chef/mixin/powershell_out'
 describe Chef::Mixin::PowershellOut, windows_only: true do
   include Chef::Mixin::PowershellOut
 
-  def node
-    OHAI_SYSTEM
-  end
-
   describe "#powershell_out" do
     it "runs a powershell command and collects stdout" do
       expect(powershell_out("get-process").run_command.stdout).to match /Handles\s+NPM\(K\)\s+PM\(K\)\s+WS\(K\)\s+VM\(M\)\s+CPU\(s\)\s+Id\s+ProcessName/

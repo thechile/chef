@@ -1,6 +1,9 @@
 version: "master-{build}"
 
-os: Windows Server 2012
+os:
+  - Windows Server 2012
+  - unstable
+
 platform:
   - x64
 

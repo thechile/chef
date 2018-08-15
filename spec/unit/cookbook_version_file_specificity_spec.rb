@@ -85,6 +85,12 @@ describe Chef::CookbookVersion, "file specificity" do
 
        # directory adirectory
        {
+         :name => "files/anotherfile1.rb",
+         :path => "files/root_directory/anotherfile1.rb.root",
+         :checksum => "csum-root-directory",
+         :specificity => "root_directory",
+       },
+       {
          :name => "anotherfile1.rb",
          :path => "files/host-examplehost.example.org/adirectory/anotherfile1.rb.host",
          :checksum => "csum-host-1",
@@ -304,6 +310,17 @@ describe Chef::CookbookVersion, "file specificity" do
 
   describe "when fetching the contents of a directory by file specificity" do
 
+    it "should return a directory of manifest records based on priority preference: root directory" do
+      node = Chef::Node.new
+      manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "root_directory")
+
+      expect(manifest_records).not_to be_nil
+      expect(manifest_records.size).to eq(1)
+
+      checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
+      expect(checksums.sort).to eq(["csum-root-directory"])
+    end
+
     it "should return a directory of manifest records based on priority preference: host" do
       node = Chef::Node.new
       node.automatic_attrs[:platform] = "ubuntu"
@@ -434,6 +451,20 @@ describe Chef::CookbookVersion, "file specificity" do
   ## Globbing the relative paths out of the manifest records ##
 
   describe "when globbing for relative file paths based on filespecificity" do
+    
+    it "should return a list of relative paths based on priority preference: root directory" do
+      node = Chef::Node.new
+      node.automatic_attrs[:platform] = "ubuntu"
+      node.automatic_attrs[:platform_version] = "9.10"
+      node.automatic_attrs[:fqdn] = "examplehost.example.org"
+
+      filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "root_directory")
+      expect(filenames).not_to be_nil
+      expect(filenames.size).to eq(1)
+
+      expect(filenames.sort).to eq(["anotherfile1.rb.root"])
+    end    
+    
     it "should return a list of relative paths based on priority preference: host" do
       node = Chef::Node.new
       node.automatic_attrs[:platform] = "ubuntu"
